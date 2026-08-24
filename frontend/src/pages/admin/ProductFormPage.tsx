@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Save, AlertCircle, Plus, X } from 'lucide-react';
 import { Product } from '../../types';
 import { apiFetch } from '../../config/api';
+import { resolveAssetUrl } from '../../utils/imageUtils';
 
 const EMPTY_PRODUCT: Omit<Product, 'id'> = {
   name: '',
@@ -206,7 +207,7 @@ export const ProductFormPage: React.FC<Props> = ({ productId, onBack, onSaved })
                   <div className="flex items-center gap-3">
                     <div className="relative">
                       <img
-                        src={form.image}
+                        src={resolveAssetUrl(form.image)}
                         alt="Featured product"
                         className="w-12 h-12 object-cover rounded border border-[#E3DCCE]"
                       />
@@ -316,22 +317,19 @@ export const ProductFormPage: React.FC<Props> = ({ productId, onBack, onSaved })
                       {hasImage ? (
                         <div className="w-full h-full relative group">
                           <img
-                            src={hasImage}
+                            src={resolveAssetUrl(hasImage)}
                             alt={`Gallery ${idx + 1}`}
                             className="w-full h-full object-cover"
                           />
                           <button
                             type="button"
-                            onClick={() => {
-                              const newImages = [...form.galleryImages];
-                              newImages[idx] = '';
-                              handleChange('galleryImages', newImages.filter(Boolean));
-                            }}
-                            className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                            title="Remove image"
+                            onClick={() => handleChange('galleryImages', form.galleryImages.filter((_, i) => i !== idx))}
+                            className="absolute top-0.5 right-0.5 z-20 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
                           >
-                            <X className="w-2 h-2" />
+                            <X className="w-3 h-3" />
                           </button>
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="absolute inset-0 z-10 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <button
                               type="button"
                               onClick={() => document.getElementById(`gallery-${idx}-input`)?.click()}
@@ -356,7 +354,8 @@ export const ProductFormPage: React.FC<Props> = ({ productId, onBack, onSaved })
                         accept="image/*"
                         className="hidden"
                         onChange={async (e) => {
-                          const file = e.target.files?.[0];
+                          const input = e.currentTarget;
+                          const file = input.files?.[0];
                           if (file) {
                             const formData = new FormData();
                             formData.append('file', file);
@@ -367,12 +366,15 @@ export const ProductFormPage: React.FC<Props> = ({ productId, onBack, onSaved })
                               });
                               const result = await response.json();
                               if (result.success) {
-                                const newImages = [...form.galleryImages];
-                                newImages[idx] = result.url;
-                                handleChange('galleryImages', newImages);
+                                const next = [...form.galleryImages];
+                                if (idx < next.length) next[idx] = result.url;
+                                else next.push(result.url);
+                                handleChange('galleryImages', next.filter(Boolean));
                               }
                             } catch (error) {
                               setError('Upload failed');
+                            } finally {
+                              input.value = '';
                             }
                           }
                         }}
