@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, Sparkles, Tag, Check, ShieldCheck } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 import { COUPONS } from '../data/products';
 
 export const CartDrawer: React.FC = () => {
@@ -104,7 +105,7 @@ export const CartDrawer: React.FC = () => {
             cart.map((item) => (
               <div key={item.product.id} className="py-4 first:pt-0 last:pb-0 flex gap-3.5">
                 <img
-                  src={item.product.image}
+                  src={resolveAssetUrl(item.product.image)}
                   alt={item.product.name}
                   className="w-20 h-20 rounded-xl object-cover bg-[#F5EFEB] shrink-0 border border-[#ECE5DC]"
                 />

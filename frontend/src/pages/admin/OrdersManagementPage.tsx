@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Download, Eye, Truck, Package, CheckCircle } from 'lucide-react';
 import { apiFetch } from '../../config/api';
+import { resolveAssetUrl } from '../../utils/imageUtils';
 
 export const OrdersManagementPage: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -313,7 +314,7 @@ export const OrdersManagementPage: React.FC = () => {
                   {selectedOrder.items?.map((item: any, idx: number) => (
                     <div key={idx} className="flex gap-3 bg-[#FAF8F5] rounded-lg p-3">
                       {item.image && (
-                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
+                        <img src={resolveAssetUrl(item.image)} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
                       )}
                       <div className="flex-1">
                         <p className="text-sm font-medium text-[#2D2723]">{item.name}</p>

@@ -23,6 +23,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 import { Address, Order } from '../types';
 
 export const CheckoutPage: React.FC = () => {
@@ -278,7 +279,7 @@ export const CheckoutPage: React.FC = () => {
                 <div key={idx} className="py-3 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <img
-                      src={item.product.image}
+                      src={resolveAssetUrl(item.product.image)}
                       alt={item.product.name}
                       className="w-12 h-12 rounded-lg object-cover bg-[#F5F2EC] border border-[#EAE3DA]"
                     />
@@ -1189,7 +1190,7 @@ export const CheckoutPage: React.FC = () => {
                   <div key={item.product.id} className="py-3.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <img
-                        src={item.product.image}
+                        src={resolveAssetUrl(item.product.image)}
                         alt={item.product.name}
                         className="w-14 h-14 rounded-lg object-cover bg-[#F5F2EC] border border-[#EAE3DA] shrink-0"
                         referrerPolicy="no-referrer"

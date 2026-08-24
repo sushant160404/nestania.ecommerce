@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Search, Package, CheckCircle2, Clock, Truck, Home, MapPin } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 import { Order } from '../types';
 
 export const OrderTrackingModal: React.FC = () => {
@@ -143,7 +144,7 @@ export const OrderTrackingModal: React.FC = () => {
                   {trackedOrder.items.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-3 p-2 bg-[#FAF8F5] rounded-xl border border-[#EDE5DB]">
                       <img
-                        src={item.product.image}
+                        src={resolveAssetUrl(item.product.image)}
                         alt={item.product.name}
                         className="w-12 h-12 rounded-lg object-cover bg-white"
                       />

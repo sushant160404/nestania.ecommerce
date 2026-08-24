@@ -10,6 +10,7 @@ import {
   Check
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 
 export const WishlistPage: React.FC = () => {
   const {
@@ -137,7 +138,7 @@ export const WishlistPage: React.FC = () => {
                   onClick={() => setSelectedProduct(product)}
                 >
                   <img
-                    src={product.image}
+                    src={resolveAssetUrl(product.image)}
                     alt={product.name}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"

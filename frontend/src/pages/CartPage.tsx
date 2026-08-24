@@ -17,6 +17,7 @@ import {
   Check
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 import { PRODUCTS, COUPONS } from '../data/products';
 import { Product } from '../types';
 
@@ -219,7 +220,7 @@ export const CartPage: React.FC = () => {
                       {/* Product Thumbnail & Details (Col 1-6) */}
                       <div className="sm:col-span-6 flex items-center gap-4 min-w-0">
                         <img 
-                          src={item.product.image} 
+                          src={resolveAssetUrl(item.product.image)}
                           alt={item.product.name}
                           onClick={() => {
                             setSelectedProduct(item.product);
@@ -555,7 +556,7 @@ export const CartPage: React.FC = () => {
                   }}
                 >
                   <img 
-                    src={prod.image} 
+                    src={resolveAssetUrl(prod.image)} 
                     alt={prod.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     referrerPolicy="no-referrer"

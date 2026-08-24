@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../../types';
+import { resolveAssetUrl } from '../../utils/imageUtils';
 import { apiFetch } from '../../config/api';
 
 const CATEGORIES = ['Dinnerware', 'Serveware', 'Drinkware', 'Home Decor', 'Kitchen', 'Gifting'];
@@ -131,7 +132,7 @@ export const ProductsManagementPage: React.FC<Props> = ({ onAdd, onEdit }) => {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         {p.image
-                          ? <img src={p.image} alt={p.name} className="w-10 h-10 rounded-lg object-cover border border-[#E3DCCE] shrink-0" />
+                          ? <img src={resolveAssetUrl(p.image)} alt={p.name} className="w-10 h-10 rounded-lg object-cover border border-[#E3DCCE] shrink-0" />
                           : <div className="w-10 h-10 rounded-lg bg-[#F5EFE9] border border-[#E3DCCE] shrink-0" />
                         }
                         <div className="min-w-0">

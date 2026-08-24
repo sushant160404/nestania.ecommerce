@@ -15,6 +15,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 import { Order } from '../types';
 
 export const OrderTrackingPage: React.FC = () => {
@@ -242,7 +243,7 @@ export const OrderTrackingPage: React.FC = () => {
                       <div key={idx} className="py-3 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                           <img
-                            src={item.product.image}
+                            src={resolveAssetUrl(item.product.image)}
                             alt={item.product.name}
                             className="w-14 h-14 rounded-xl object-cover bg-[#F5F2EC] border border-[#EAE3DA]"
                           />

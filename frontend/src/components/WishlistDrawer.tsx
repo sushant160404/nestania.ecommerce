@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 
 export const WishlistDrawer: React.FC = () => {
   const {
@@ -44,7 +45,7 @@ export const WishlistDrawer: React.FC = () => {
             wishlist.map((prod) => (
               <div key={prod.id} className="py-4 first:pt-0 last:pb-0 flex gap-3.5 items-center">
                 <img
-                  src={prod.image}
+                  src={resolveAssetUrl(prod.image)}
                   alt={prod.name}
                   onClick={() => {
                     setSelectedProduct(prod);

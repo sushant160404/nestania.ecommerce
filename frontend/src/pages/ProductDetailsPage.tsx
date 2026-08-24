@@ -24,6 +24,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 import { Product, Review } from '../types';
 import { PRODUCTS } from '../data/products';
 
@@ -112,9 +113,9 @@ export const ProductDetailsPage: React.FC = () => {
 
   const isFavorite = isInWishlist(currentProduct.id);
 
-  const allImages = currentProduct.galleryImages && currentProduct.galleryImages.length > 0
+  const allImages = (currentProduct.galleryImages && currentProduct.galleryImages.length > 0
     ? currentProduct.galleryImages
-    : [currentProduct.image];
+    : [currentProduct.image]).map(resolveAssetUrl);
 
   // Specific 5 recommendation products matching the screenshot
   const recommendationIds = [
@@ -306,7 +307,7 @@ export const ProductDetailsPage: React.FC = () => {
             {/* Main Product Image */}
             <div className="relative flex-1 aspect-square rounded-2xl sm:rounded-3xl overflow-hidden bg-[#FAF8F5] border border-[#EAE3DA] shadow-xs order-1 sm:order-2 group">
               <img
-                src={allImages[activeImageIndex] || currentProduct.image}
+                src={allImages[activeImageIndex] || resolveAssetUrl(currentProduct.image)}
                 alt={currentProduct.name}
                 className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
                 referrerPolicy="no-referrer"
@@ -727,7 +728,7 @@ export const ProductDetailsPage: React.FC = () => {
                 >
                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden mb-2.5 bg-white border border-[#EBE3D7]">
                     <img 
-                      src={item.image} 
+                      src={resolveAssetUrl(item.image)}
                       alt={item.name} 
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
@@ -802,7 +803,7 @@ export const ProductDetailsPage: React.FC = () => {
                   className="relative aspect-square overflow-hidden bg-[#FAF8F5] cursor-pointer"
                 >
                   <img
-                    src={prod.image}
+                    src={resolveAssetUrl(prod.image)}
                     alt={prod.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     referrerPolicy="no-referrer"

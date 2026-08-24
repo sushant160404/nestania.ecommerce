@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Heart, ShoppingBag, User as UserIcon, X, Sparkles, ChevronRight, Menu } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { resolveAssetUrl } from '../utils/imageUtils';
 import { PRODUCTS } from '../data/products';
 
 interface HeaderProps {
@@ -136,7 +137,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                             className="flex items-center gap-3 p-2.5 hover:bg-[#FAF8F5] rounded-xl cursor-pointer transition-colors"
                           >
                             <img
-                              src={prod.image}
+                              src={resolveAssetUrl(prod.image)}
                               alt={prod.name}
                               className="w-12 h-12 rounded-lg object-cover bg-[#F5EFEB]"
                             />
