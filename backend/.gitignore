@@ -1,0 +1,31 @@
+# Dependencies — never commit; Render/CI run their own install.
+# (Committing these ships platform-specific binaries like esbuild that
+#  break the build on Render's Linux servers.)
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Local env files — keep the *.example templates tracked.
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Uploaded product images are runtime data, not source. Keep the folder's
+# README + placeholder, ignore anything uploaded at runtime.
+public/product_images/*
+!public/product_images/README.md
+!public/product_images/sample-placeholder.svg
+
+# Logs & debug
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.local
