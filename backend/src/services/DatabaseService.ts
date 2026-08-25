@@ -303,6 +303,78 @@ export class DatabaseService {
 
   // ── PRODUCTS ──────────────────────────────────────────────────────────────
 
+  async getAllProducts(): Promise<Product[]> {
+    this.checkEnabled();
+    const docs = await this.productsCollection!.find({}).toArray();
+    return docs.map(d => this.parseProduct(d));
+  }
+
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    this.checkEnabled();
+    const docs = await this.productsCollection!.find({ category }).toArray();
+    return docs.map(d => this.parseProduct(d));
+  }
+
+  async searchProducts(query: string): Promise<Product[]> {
+    this.checkEnabled();
+    const searchRegex = new RegExp(query, 'i');
+    const docs = await this.productsCollection!.find({
+      $or: [
+        { name: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+        { category: { $regex: searchRegex } },
+        { tags: { $in: [searchRegex] } }
+      ]
+    }).toArray();
+    return docs.map(d => this.parseProduct(d));
+  }
+
+  async getProductsByFilters(filters: {
+    category?: string;
+    search?: string;
+    isNew?: boolean;
+    isSale?: boolean;
+    isBestSeller?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+  }): Promise<Product[]> {
+    this.checkEnabled();
+    const query: any = {};
+
+    if (filters.category && filters.category !== 'All' && filters.category !== 'Collections') {
+      query.category = new RegExp(filters.category, 'i');
+    }
+
+    if (filters.search) {
+      const searchRegex = new RegExp(filters.search, 'i');
+      query.$or = [
+        { name: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+        { category: { $regex: searchRegex } },
+        { tags: { $in: [searchRegex] } }
+      ];
+    }
+
+    if (filters.isNew) query.isNew = true;
+    if (filters.isBestSeller) query.isBestSeller = true;
+    if (filters.isSale) {
+      query.$or = query.$or || [];
+      query.$or.push(
+        { isSale: true },
+        { $expr: { $gt: ['$originalPrice', '$price'] } }
+      );
+    }
+
+    if (filters.minPrice) query.price = { $gte: filters.minPrice };
+    if (filters.maxPrice) {
+      query.price = query.price || {};
+      query.price.$lte = filters.maxPrice;
+    }
+
+    const docs = await this.productsCollection!.find(query).toArray();
+    return docs.map(d => this.parseProduct(d));
+  }
+
   async syncProductToDatabase(product: Product): Promise<void> {
     this.checkEnabled();
     await this.productsCollection!.updateOne(
@@ -315,7 +387,7 @@ export class DatabaseService {
   async getProductById(productId: string): Promise<Product | null> {
     this.checkEnabled();
     const doc = await this.productsCollection!.findOne({ id: productId });
-    return doc ? (doc as unknown as Product) : null;
+    return doc ? this.parseProduct(doc) : null;
   }
 
   async updateProductStock(productId: string, stockCount: number): Promise<void> {
@@ -324,6 +396,40 @@ export class DatabaseService {
       { id: productId },
       { $set: { stockCount, inStock: stockCount > 0, updatedAt: new Date() } }
     );
+  }
+
+  async createProduct(product: Omit<Product, 'id'> & { id?: string }): Promise<Product> {
+    this.checkEnabled();
+    const productData = {
+      ...product,
+      id: product.id || `nest-${Date.now()}`,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    await this.productsCollection!.insertOne(productData);
+    return productData as Product;
+  }
+
+  async updateProduct(productId: string, updates: Partial<Product>): Promise<Product | null> {
+    this.checkEnabled();
+    const result = await this.productsCollection!.findOneAndUpdate(
+      { id: productId },
+      { $set: { ...updates, updatedAt: new Date() } },
+      { returnDocument: 'after' }
+    );
+    
+    return result ? this.parseProduct(result) : null;
+  }
+
+  async deleteProduct(productId: string): Promise<boolean> {
+    this.checkEnabled();
+    const result = await this.productsCollection!.deleteOne({ id: productId });
+    return result.deletedCount > 0;
+  }
+
+  async getProductsCount(): Promise<number> {
+    try { this.checkEnabled(); return await this.productsCollection!.countDocuments(); } catch { return 0; }
   }
 
   // ── CONTACT MESSAGES ─────────────────────────────────────────────────────
@@ -405,6 +511,43 @@ export class DatabaseService {
       comment: doc.comment,
       verifiedPurchase: doc.verifiedPurchase,
       helpfulCount: doc.helpfulCount,
+    };
+  }
+
+  private parseProduct(doc: any): Product {
+    return {
+      id: doc.id,
+      name: doc.name,
+      subtitle: doc.subtitle,
+      sku: doc.sku,
+      soldCount: doc.soldCount,
+      category: doc.category,
+      subcategory: doc.subcategory,
+      materialCategory: doc.materialCategory,
+      colorFamily: doc.colorFamily,
+      colorHex: doc.colorHex,
+      patternType: doc.patternType,
+      occasionType: doc.occasionType,
+      price: doc.price,
+      originalPrice: doc.originalPrice,
+      rating: doc.rating,
+      reviewsCount: doc.reviewsCount,
+      isNew: doc.isNew,
+      isSale: doc.isSale,
+      isBestSeller: doc.isBestSeller,
+      image: doc.image,
+      galleryImages: doc.galleryImages || [],
+      description: doc.description,
+      finish: doc.finish,
+      microwaveSafe: doc.microwaveSafe,
+      dishwasherSafe: doc.dishwasherSafe,
+      chipResistant: doc.chipResistant,
+      boxItems: doc.boxItems || [],
+      features: doc.features || [],
+      details: doc.details,
+      inStock: doc.inStock,
+      stockCount: doc.stockCount,
+      tags: doc.tags || [],
     };
   }
 
